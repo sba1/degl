@@ -64,8 +64,14 @@ struct GlobalFunction
  */
 static std::vector<GlobalFunction> global_functions;
 
+/**
+ * Maps names of global variables to their defining cursor.
+ */
 static std::map<std::string, CXCursor> global_var_map;
 
+/**
+ * Represents a reference to a global variable
+ */
 struct GlobalRef
 {
 	CXCursor referenceCursor;
@@ -73,12 +79,18 @@ struct GlobalRef
 };
 static std::vector<GlobalRef> refs_to_global_vars;
 
+/**
+ * Represents a simple text edit of some source.
+ */
 struct TextEdit
 {
-	int start;
-	int length;
-	std::string new_string;
+	int start;		/**< Starting offset of the edit */
+	int length;		/**< Length of the text to be replaced */
+	std::string new_string; /**< The text that replaces the region of the source text */
 
+	/**
+	 * Create a text edit with the entire range.
+         */
 	static TextEdit fromCXCursor(CXCursor cursor)
 	{
 		TextEdit te;
@@ -154,6 +166,7 @@ void transform(const char *filename)
 	std::ifstream ifs(filename);
 	source.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
 
+	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
@@ -166,6 +179,7 @@ void transform(const char *filename)
 	cerr << "Number of global variables: " << global_var_map.size() << endl;
 	cerr << "Number of references: " << refs_to_global_vars.size() << endl;
 
+	/* Add to each collected global function the context parameter */
 	for (auto ref : global_functions)
 	{
 		CXSourceRange range = clang_getCursorExtent(ref.decl);
@@ -199,6 +213,7 @@ void transform(const char *filename)
 		}
 	}
 
+	/* Replace each access to a global variable by an access to the context */
 	for (auto ref : refs_to_global_vars)
 	{
 		stringstream new_text;
@@ -209,7 +224,7 @@ void transform(const char *filename)
 		text_edits.push_back(te);
 	}
 
-	/* Sort decreasing in decreasing order */
+	/* Sort text edits in decreasing order */
 	sort(text_edits.begin(), text_edits.end(),  [](TextEdit a, TextEdit b)
 			{
 				return a.start > b.start;
