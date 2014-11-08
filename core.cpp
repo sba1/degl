@@ -247,7 +247,13 @@ void transform(const char *filename)
 	for (auto te : text_edits)
 		source.replace(te.start, te.length, te.new_string);
 
+	cout << source << endl;
+
+	/* Now write out the init function */
+	cout << "void __init__context__(struct __context__ *__context__)" << endl;
+	cout << "{" << endl;
+	cout << "}" << endl;
+
 	clang_disposeIndex(idx);
 
-	cout << source << endl;
 }
