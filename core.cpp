@@ -270,6 +270,15 @@ void transform(const char *filename)
 	/* Now write out the init function */
 	cout << "void __init__context__(struct __context__ *__context__)" << endl;
 	cout << "{" << endl;
+
+	for (auto it : global_var_map)
+	{
+		if (clang_Cursor_isNull(it.second.assignment))
+		{
+			cout << "    __context->" << it.first << " = 0;" << endl;
+		}
+	}
+
 	cout << "}" << endl;
 
 	clang_disposeIndex(idx);
