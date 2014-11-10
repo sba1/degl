@@ -121,9 +121,13 @@ static std::string source;
 static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClientData client_data)
 {
 	static struct GlobalFunction *currentFunction = NULL;
+	static struct GlobalVariable *currentVariable = NULL;
 
 	enum CXCursorKind cursor_kind = clang_getCursorKind(cursor);
 	enum CXCursorKind parent_cursor_kind = clang_getCursorKind(parent);
+
+	if (currentVariable && clang_equalCursors(parent, currentVariable->decl))
+		currentVariable->assignment = cursor;
 
 	switch (cursor_kind)
 	{
@@ -162,9 +166,9 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 			/* Remember all global variables */
 			if (parent_cursor_kind == CXCursor_TranslationUnit)
 			{
-				GlobalVariable glVariable;
+				GlobalVariable &glVariable = global_var_map[clang_getCString(clang_getCursorDisplayName(cursor))];
 				glVariable.decl = cursor;
-				global_var_map[clang_getCString(clang_getCursorDisplayName(cursor))] = glVariable;
+				currentVariable = &glVariable;
 			}
 			break;
 
