@@ -64,10 +64,20 @@ struct GlobalFunction
  */
 static std::vector<GlobalFunction> global_functions;
 
+struct GlobalVariable
+{
+	CXCursor decl;
+	CXCursor assignment;
+
+	GlobalVariable() : decl(clang_getNullCursor()), assignment(clang_getNullCursor())
+	{
+	}
+};
+
 /**
  * Maps names of global variables to their defining cursor.
  */
-static std::map<std::string, CXCursor> global_var_map;
+static std::map<std::string, GlobalVariable> global_var_map;
 
 /**
  * Represents a reference to a global variable
@@ -151,7 +161,11 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 	case	CXCursor_VarDecl:
 			/* Remember all global variables */
 			if (parent_cursor_kind == CXCursor_TranslationUnit)
-				global_var_map[clang_getCString(clang_getCursorDisplayName(cursor))] = cursor;
+			{
+				GlobalVariable glVariable;
+				glVariable.decl = cursor;
+				global_var_map[clang_getCString(clang_getCursorDisplayName(cursor))] = glVariable;
+			}
 			break;
 
 	default:
@@ -235,9 +249,9 @@ void transform(const char *filename)
 
 	for (auto it : global_var_map)
 	{
-		CXType type = clang_getCursorType(it.second);
+		CXType type = clang_getCursorType(it.second.decl);
 		CXString typeSpelling = clang_getTypeSpelling(type);
-		CXString cursorSpelling = clang_getCursorSpelling(it.second);
+		CXString cursorSpelling = clang_getCursorSpelling(it.second.decl);
 
 		cout << "    " << clang_getCString(typeSpelling) << " " << it.first << ";" << endl;
 	}
