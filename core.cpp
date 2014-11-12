@@ -275,7 +275,7 @@ void transform(const char *filename)
 	{
 		if (clang_Cursor_isNull(it.second.assignment))
 		{
-			cout << "    __context->" << it.first << " = 0;" << endl;
+			cout << "    __context__->" << it.first << " = 0;" << endl;
 		}
 	}
 
