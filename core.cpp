@@ -281,6 +281,10 @@ void transform(const char *filename)
 		if (clang_Cursor_isNull(it.second.assignment))
 		{
 			cout << "    __context__->" << it.first << " = 0;" << endl;
+		} else
+		{
+			TextEdit te = TextEdit::fromCXCursor(it.second.assignment);
+			cout << "    __context__->" << it.first << " = " << source.substr(te.start, te.length) << ";" << endl;
 		}
 	}
 
