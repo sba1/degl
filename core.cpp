@@ -259,7 +259,7 @@ void transform(const char *filename)
 
 		cout << "    " << clang_getCString(typeSpelling) << " " << it.first << ";" << endl;
 	}
-	cout << "}" << endl;
+	cout << "};" << endl;
 
 	std::string new_source = source;
 	/* Now perform edit operations */
