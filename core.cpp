@@ -261,11 +261,12 @@ void transform(const char *filename)
 	}
 	cout << "}" << endl;
 
+	std::string new_source = source;
 	/* Now perform edit operations */
 	for (auto te : text_edits)
-		source.replace(te.start, te.length, te.new_string);
+		new_source.replace(te.start, te.length, te.new_string);
 
-	cout << source << endl;
+	cout << new_source << endl;
 
 	/* Now write out the init function */
 	cout << "void __init__context__(struct __context__ *__context__)" << endl;
