@@ -258,6 +258,10 @@ void transform(const char *filename)
 		CXString cursorSpelling = clang_getCursorSpelling(it.second.decl);
 
 		cout << "    " << clang_getCString(typeSpelling) << " " << it.first << ";" << endl;
+
+		/* Remove the global variables */
+		TextEdit te = TextEdit::fromCXCursor(it.second.decl);
+		text_edits.push_back(te);
 	}
 	cout << "};" << endl;
 
