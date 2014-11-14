@@ -114,7 +114,14 @@ struct TextEdit
 	}
 };
 
-static std::string source;
+/**
+ * Represents a translation unit.
+ */
+struct TrUnit
+{
+	const char *filename;
+	string source;
+};
 
 /****************************************************************/
 
@@ -180,6 +187,12 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 
 void transform(const char *filename)
 {
+	TrUnit tr_unit;
+
+	tr_unit.filename = filename;
+
+	std::string &source = tr_unit.source;
+
 	/* Load complete file as string */
 	std::ifstream ifs(filename);
 	source.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
