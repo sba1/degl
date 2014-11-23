@@ -196,6 +196,10 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 	return CXChildVisit_Recurse;
 }
 
+static void process_single_source_file(const char *filename)
+{
+}
+
 void transform(std::vector<const char *> &filenames)
 {
 	FilenameWithContents tr_unit;
