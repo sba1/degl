@@ -95,6 +95,7 @@ static std::vector<GlobalRef> refs_to_global_vars;
  */
 struct TextEdit
 {
+	const char *filename; /**< Name of the file that is affected by the edit */
 	int start;		/**< Starting offset of the edit */
 	int length;		/**< Length of the text to be replaced */
 	std::string new_string; /**< The text that replaces the region of the source text */
@@ -104,11 +105,20 @@ struct TextEdit
          */
 	static TextEdit fromCXCursor(CXCursor cursor)
 	{
-		TextEdit te;
+		CXSourceLocation loc = clang_getCursorLocation(cursor);
+
+		CXFile file;
+		unsigned line;
+		unsigned column;
+		unsigned off;
+		clang_getSpellingLocation(loc, &file, &line, &column, &off);
 
 		CXSourceRange range = clang_getCursorExtent(cursor);
 		int start = offset(clang_getRangeStart(range));
 		int end = offset(clang_getRangeEnd(range));
+
+		TextEdit te;
+		te.filename = clang_getCString(clang_getFileName(file));
 		te.start = start;
 		te.length = end - start;
 		return te;
@@ -222,6 +232,8 @@ void transform(std::vector<const char *> &filenames)
 		if (!clang_Cursor_isNull(ref.paramDecl))
 		{
 			TextEdit te = TextEdit::fromCXCursor(ref.paramDecl);
+			if (strcmp(te.filename, tr_unit.filename))
+				continue;
 
 			stringstream new_text;
 			new_text << "struct __context__ *__context__, ";
@@ -233,6 +245,10 @@ void transform(std::vector<const char *> &filenames)
 		{
 			TextEdit te = TextEdit::fromCXCursor(ref.decl);
 			TextEdit te2 = TextEdit::fromCXCursor(ref.block);
+
+			if (strcmp(te.filename, tr_unit.filename))
+				continue;
+
 			te.length = te2.start - te.start;
 			stringstream new_text;
 
