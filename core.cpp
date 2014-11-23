@@ -210,6 +210,7 @@ void transform(std::vector<const char *> &filenames)
 	/* Determine global variables and their references */
 	clang_visitChildren(cursor, vistor, NULL);
 
+	cerr << "Number of global functions: " << global_functions.size() << endl;
 	cerr << "Number of global variables: " << global_var_map.size() << endl;
 	cerr << "Number of references: " << refs_to_global_vars.size() << endl;
 
