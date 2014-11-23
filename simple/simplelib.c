@@ -1,3 +1,5 @@
+#include "simplelib.h"
+
 static int global;
 static short sh_global = 2;
 
