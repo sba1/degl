@@ -232,8 +232,6 @@ void transform(std::vector<const char *> &filenames)
 		if (!clang_Cursor_isNull(ref.paramDecl))
 		{
 			TextEdit te = TextEdit::fromCXCursor(ref.paramDecl);
-			if (strcmp(te.filename, tr_unit.filename))
-				continue;
 
 			stringstream new_text;
 			new_text << "struct __context__ *__context__, ";
@@ -245,10 +243,6 @@ void transform(std::vector<const char *> &filenames)
 		{
 			TextEdit te = TextEdit::fromCXCursor(ref.decl);
 			TextEdit te2 = TextEdit::fromCXCursor(ref.block);
-
-			if (strcmp(te.filename, tr_unit.filename))
-				continue;
-
 			te.length = te2.start - te.start;
 			stringstream new_text;
 
@@ -301,7 +295,11 @@ void transform(std::vector<const char *> &filenames)
 	std::string new_source = source;
 	/* Now perform edit operations */
 	for (auto te : text_edits)
+	{
+		if (strcmp(te.filename, tr_unit.filename))
+			continue;
 		new_source.replace(te.start, te.length, te.new_string);
+	}
 
 	cout << new_source << endl;
 
