@@ -126,9 +126,9 @@ struct TextEdit
 };
 
 /**
- * Represents a translation unit.
+ * Represents a physical file and its contents.
  */
-struct TrUnit
+struct FilenameWithContents
 {
 	const char *filename;
 	string source;
@@ -198,7 +198,7 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 
 void transform(std::vector<const char *> &filenames)
 {
-	TrUnit tr_unit;
+	FilenameWithContents tr_unit;
 
 	assert(filenames.size() > 0);
 
