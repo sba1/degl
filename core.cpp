@@ -4,6 +4,7 @@
 
 #include "core.hpp"
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -185,23 +186,25 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 	return CXChildVisit_Recurse;
 }
 
-void transform(const char *filename)
+void transform(std::vector<const char *> &filenames)
 {
 	TrUnit tr_unit;
 
-	tr_unit.filename = filename;
+	assert(filenames.size() > 0);
+
+	tr_unit.filename = filenames[0];
 
 	std::string &source = tr_unit.source;
 
 	/* Load complete file as string */
-	std::ifstream ifs(filename);
+	std::ifstream ifs(tr_unit.filename);
 	source.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
 
 	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
-	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, 0, NULL, 0, NULL);
+	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, tr_unit.filename, 0, NULL, 0, NULL);
 	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
 
 	/* Determine global variables and their references */
@@ -305,4 +308,12 @@ void transform(const char *filename)
 
 	clang_disposeIndex(idx);
 
+}
+
+void transform(const char *filename)
+{
+	std::vector<const char *> filenames;
+	filenames.push_back(filename);
+
+	transform(filenames);
 }
