@@ -132,6 +132,13 @@ struct FilenameWithContents
 {
 	const char *filename;
 	string source;
+
+	FilenameWithContents(const char *filename_) : filename(filename_)
+	{
+		/* Load complete file as string */
+		std::ifstream ifs(filename);
+		source.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
+	}
 };
 
 /****************************************************************/
@@ -202,23 +209,15 @@ static void process_single_source_file(const char *filename)
 
 void transform(std::vector<const char *> &filenames)
 {
-	FilenameWithContents tr_unit;
-
 	assert(filenames.size() > 0);
 
-	tr_unit.filename = filenames[0];
-
-	std::string &source = tr_unit.source;
-
-	/* Load complete file as string */
-	std::ifstream ifs(tr_unit.filename);
-	source.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
+	FilenameWithContents file(filenames[0]);
 
 	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
-	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, tr_unit.filename, 0, NULL, 0, NULL);
+	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, file.filename, 0, NULL, 0, NULL);
 	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
 
 	/* Determine global variables and their references */
@@ -239,7 +238,7 @@ void transform(std::vector<const char *> &filenames)
 
 			stringstream new_text;
 			new_text << "struct __context__ *__context__, ";
-			new_text << source.substr(te.start, te.length);
+			new_text << file.source.substr(te.start, te.length);
 
 			te.new_string = new_text.str();
 			text_edits.push_back(te);
@@ -296,11 +295,11 @@ void transform(std::vector<const char *> &filenames)
 	}
 	cout << "};" << endl;
 
-	std::string new_source = source;
+	std::string new_source = file.source;
 	/* Now perform edit operations */
 	for (auto te : text_edits)
 	{
-		if (strcmp(te.filename, tr_unit.filename))
+		if (strcmp(te.filename, file.filename))
 			continue;
 		new_source.replace(te.start, te.length, te.new_string);
 	}
@@ -319,7 +318,7 @@ void transform(std::vector<const char *> &filenames)
 		} else
 		{
 			TextEdit te = TextEdit::fromCXCursor(it.second.assignment);
-			cout << "    __context__->" << it.first << " = " << source.substr(te.start, te.length) << ";" << endl;
+			cout << "    __context__->" << it.first << " = " << file.source.substr(te.start, te.length) << ";" << endl;
 		}
 	}
 
