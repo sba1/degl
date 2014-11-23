@@ -1,4 +1,4 @@
-#include "simplelib.h"
+#include "func1.h"
 
 static int global;
 static short sh_global = 2;

@@ -1,6 +1,6 @@
 #include "core.cpp"
 
 int main(int argc, char **argv) {
-	transform("simple/simplelib.c");
+	transform("simplelib/func1.c");
 	return 0;
 }
