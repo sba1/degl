@@ -102,7 +102,7 @@ struct TextEdit
 
 	/**
 	 * Create a text edit with the entire range.
-         */
+	 */
 	static TextEdit fromCXCursor(CXCursor cursor)
 	{
 		CXSourceLocation loc = clang_getCursorLocation(cursor);
