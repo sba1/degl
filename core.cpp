@@ -37,6 +37,19 @@ static int offset(CXCursor cursor)
 	return offset(clang_getCursorLocation(cursor));
 }
 
+static const char *filename(CXCursor cursor)
+{
+	CXFile file;
+	unsigned line;
+	unsigned column;
+	unsigned off;
+
+	CXSourceLocation loc = clang_getCursorLocation(cursor);
+	clang_getSpellingLocation(loc, &file, &line, &column, &off);
+
+	return clang_getCString(clang_getFileName(file));
+}
+
 static void print_range(CXCursor cursor)
 {
 	CXSourceRange range = clang_getCursorExtent(cursor);
@@ -105,20 +118,12 @@ struct TextEdit
 	 */
 	static TextEdit fromCXCursor(CXCursor cursor)
 	{
-		CXSourceLocation loc = clang_getCursorLocation(cursor);
-
-		CXFile file;
-		unsigned line;
-		unsigned column;
-		unsigned off;
-		clang_getSpellingLocation(loc, &file, &line, &column, &off);
-
 		CXSourceRange range = clang_getCursorExtent(cursor);
 		int start = offset(clang_getRangeStart(range));
 		int end = offset(clang_getRangeEnd(range));
 
 		TextEdit te;
-		te.filename = clang_getCString(clang_getFileName(file));
+		te.filename = ::filename(cursor);
 		te.start = start;
 		te.length = end - start;
 		return te;
