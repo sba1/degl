@@ -226,6 +226,24 @@ static void insert_file(const char *filename)
 	fileMap.insert(make_pair(filename, FilenameWithContents(filename)));
 }
 
+/**
+ * Returns the file given by the filename. If the file is not loaded,
+ * it will be loaded.
+ *
+ * @param filename
+ * @return a ref to the requested file.
+ */
+static FilenameWithContents &get_file(const char *filename)
+{
+	auto file = fileMap.find(filename);
+	if (file == fileMap.end())
+	{
+		insert_file(filename);
+		file = fileMap.find(filename);
+	}
+	return file->second;
+}
+
 __attribute__((unused))
 static void process_single_source_file(const char *filename)
 {
@@ -358,13 +376,7 @@ void transform(std::vector<const char *> &filenames)
 				cout << new_source << endl;
 			}
 
-			auto file = fileMap.find(te.filename);
-			if (file == fileMap.end())
-			{
-				insert_file(te.filename);
-				file = fileMap.find(te.filename);
-			}
-			new_source = file->second.source;
+			new_source = get_file(te.filename).source;
 			prev_filename = te.filename;
 		}
 		new_source.replace(te.start, te.length, te.new_string);
