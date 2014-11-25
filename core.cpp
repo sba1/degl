@@ -277,7 +277,7 @@ void transform(std::vector<const char *> &filenames)
 			CXString cursorSpelling = clang_getCursorSpelling(ref.decl);
 
 			new_text << clang_getCString(typeSpelling) << " " << clang_getCString(cursorSpelling);
-			new_text << "(struct context __context__ *__context__)" << endl;
+			new_text << "(struct __context__ *__context__)" << endl;
 
 			te.new_string = new_text.str();
 			text_edits.push_back(te);
