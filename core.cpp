@@ -352,7 +352,11 @@ void transform(std::vector<const char *> &filenames)
 		if (strcmp(te.filename, prev_filename))
 		{
 			/* Output previous file */
-			cout << new_source << endl;
+			if (strlen(prev_filename))
+			{
+				cout << "/* " << prev_filename << " */" << endl;
+				cout << new_source << endl;
+			}
 
 			auto file = fileMap.find(te.filename);
 			if (file == fileMap.end())
@@ -367,12 +371,15 @@ void transform(std::vector<const char *> &filenames)
 	}
 
 	/* Output final file */
+	cout << "/* " << prev_filename << " */" << endl;
 	cout << new_source << endl;
 
 	/* Output the context header file */
+	cout << "/* __context__.h */" << endl;
 	cout << context_header.str() << endl;
 
 	/* Output the context source file */
+	cout << "/* __context__.c */" << endl;
 	cout << context_source.str() << endl;
 
 	clang_disposeIndex(idx);
