@@ -15,6 +15,7 @@
 #include <iosfwd>
 #include <iostream>
 #include <map>
+#include <unordered_map>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -208,6 +209,21 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 	return CXChildVisit_Recurse;
 }
 
+/**
+ * A map containing all files that are considered.
+ */
+static unordered_map<string, FilenameWithContents> fileMap;
+
+/**
+ * Insert a file into our file map.
+ *
+ * @param filename
+ */
+static void insert_file(const char *filename)
+{
+	fileMap.insert(make_pair(filename, FilenameWithContents(filename)));
+}
+
 static void process_single_source_file(const char *filename)
 {
 }
@@ -216,7 +232,8 @@ void transform(std::vector<const char *> &filenames)
 {
 	assert(filenames.size() > 0);
 
-	FilenameWithContents file(filenames[0]);
+	insert_file(filenames[0]);
+	FilenameWithContents &file = fileMap.at(filenames[0]);
 
 	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
@@ -303,15 +320,31 @@ void transform(std::vector<const char *> &filenames)
 				return a.start > b.start;
 			});
 
-	std::string new_source = file.source;
+	/* Insert text edit eol marker */
+	const char *prev_filename = "";
+	std::string new_source;
+
 	/* Now perform edit operations */
 	for (auto te : text_edits)
 	{
-		if (strcmp(te.filename, file.filename))
-			continue;
+		if (strcmp(te.filename, prev_filename))
+		{
+			/* Output previous file */
+			cout << new_source << endl;
+
+			auto file = fileMap.find(te.filename);
+			if (file == fileMap.end())
+			{
+				insert_file(te.filename);
+				file = fileMap.find(te.filename);
+			}
+			new_source = file->second.source;
+			prev_filename = te.filename;
+		}
 		new_source.replace(te.start, te.length, te.new_string);
 	}
 
+	/* Output previous file */
 	cout << new_source << endl;
 
 	/* Now write out the init function */
