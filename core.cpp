@@ -295,21 +295,43 @@ void transform(std::vector<const char *> &filenames)
 		text_edits.push_back(te);
 	}
 
-	cout << "struct __context__" << endl;
-	cout << "{" << endl;
+	stringstream context_header;
+	stringstream context_source;
+
+	context_header << "struct __context__" << endl;
+	context_header << "{" << endl;
 
 	for (auto it : global_var_map)
 	{
 		CXType type = clang_getCursorType(it.second.decl);
 		CXString typeSpelling = clang_getTypeSpelling(type);
 
-		cout << "    " << clang_getCString(typeSpelling) << " " << it.first << ";" << endl;
+		context_header << "    " << clang_getCString(typeSpelling) << " " << it.first << ";" << endl;
 
 		/* Remove the global variables */
 		TextEdit te = TextEdit::fromCXCursor(it.second.decl);
 		text_edits.push_back(te);
 	}
-	cout << "};" << endl;
+	context_header << "};" << endl;
+
+	/* Output the context source file */
+	context_source << "void __init__context__(struct __context__ *__context__)" << endl;
+	context_source << "{" << endl;
+
+	for (auto it : global_var_map)
+	{
+		if (clang_Cursor_isNull(it.second.assignment))
+		{
+			context_source << "    __context__->" << it.first << " = 0;" << endl;
+		} else
+		{
+			TextEdit te = TextEdit::fromCXCursor(it.second.assignment);
+			context_source << "    __context__->" << it.first << " = " << file.source.substr(te.start, te.length) << ";" << endl;
+		}
+	}
+
+	context_source << "}" << endl;
+
 
 	/* Sort text edits in decreasing order */
 	sort(text_edits.begin(), text_edits.end(),  [](TextEdit a, TextEdit b)
@@ -344,26 +366,14 @@ void transform(std::vector<const char *> &filenames)
 		new_source.replace(te.start, te.length, te.new_string);
 	}
 
-	/* Output previous file */
+	/* Output final file */
 	cout << new_source << endl;
 
-	/* Now write out the init function */
-	cout << "void __init__context__(struct __context__ *__context__)" << endl;
-	cout << "{" << endl;
+	/* Output the context header file */
+	cout << context_header.str() << endl;
 
-	for (auto it : global_var_map)
-	{
-		if (clang_Cursor_isNull(it.second.assignment))
-		{
-			cout << "    __context__->" << it.first << " = 0;" << endl;
-		} else
-		{
-			TextEdit te = TextEdit::fromCXCursor(it.second.assignment);
-			cout << "    __context__->" << it.first << " = " << file.source.substr(te.start, te.length) << ";" << endl;
-		}
-	}
-
-	cout << "}" << endl;
+	/* Output the context source file */
+	cout << context_source.str() << endl;
 
 	clang_disposeIndex(idx);
 
