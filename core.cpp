@@ -277,12 +277,6 @@ void transform(std::vector<const char *> &filenames)
 		text_edits.push_back(te);
 	}
 
-	/* Sort text edits in decreasing order */
-	sort(text_edits.begin(), text_edits.end(),  [](TextEdit a, TextEdit b)
-			{
-				return a.start > b.start;
-			});
-
 	cout << "struct __context__" << endl;
 	cout << "{" << endl;
 
@@ -299,6 +293,12 @@ void transform(std::vector<const char *> &filenames)
 		text_edits.push_back(te);
 	}
 	cout << "};" << endl;
+
+	/* Sort text edits in decreasing order */
+	sort(text_edits.begin(), text_edits.end(),  [](TextEdit a, TextEdit b)
+			{
+				return a.start > b.start;
+			});
 
 	std::string new_source = file.source;
 	/* Now perform edit operations */
