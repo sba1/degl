@@ -279,7 +279,7 @@ void transform(std::vector<const char *> &filenames)
 
 			stringstream new_text;
 			new_text << "struct __context__ *__context__, ";
-			new_text << file.source.substr(te.start, te.length);
+			new_text << get_file(te.filename).source.substr(te.start, te.length);
 
 			te.new_string = new_text.str();
 			text_edits.push_back(te);
@@ -344,7 +344,7 @@ void transform(std::vector<const char *> &filenames)
 		} else
 		{
 			TextEdit te = TextEdit::fromCXCursor(it.second.assignment);
-			context_source << "    __context__->" << it.first << " = " << file.source.substr(te.start, te.length) << ";" << endl;
+			context_source << "    __context__->" << it.first << " = " << get_file(te.filename).source.substr(te.start, te.length) << ";" << endl;
 		}
 	}
 
