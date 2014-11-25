@@ -253,14 +253,14 @@ void transform(std::vector<const char *> &filenames)
 {
 	assert(filenames.size() > 0);
 
-	insert_file(filenames[0]);
-	FilenameWithContents &file = fileMap.at(filenames[0]);
+	const char *filename = filenames[0];
+	insert_file(filename);
 
 	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
-	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, file.filename, 0, NULL, 0, NULL);
+	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, 0, NULL, 0, NULL);
 	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
 
 	/* Determine global variables and their references */
