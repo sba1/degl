@@ -33,6 +33,7 @@ static int offset(CXSourceLocation location)
 	return offset;
 }
 
+__attribute__((unused))
 static int offset(CXCursor cursor)
 {
 	return offset(clang_getCursorLocation(cursor));
@@ -51,6 +52,7 @@ static const char *filename(CXCursor cursor)
 	return clang_getCString(clang_getFileName(file));
 }
 
+__attribute__((unused))
 static void print_range(CXCursor cursor)
 {
 	CXSourceRange range = clang_getCursorExtent(cursor);
@@ -224,6 +226,7 @@ static void insert_file(const char *filename)
 	fileMap.insert(make_pair(filename, FilenameWithContents(filename)));
 }
 
+__attribute__((unused))
 static void process_single_source_file(const char *filename)
 {
 }
@@ -252,8 +255,6 @@ void transform(std::vector<const char *> &filenames)
 	/* Add to each collected global function the context parameter */
 	for (auto ref : global_functions)
 	{
-		CXSourceRange range = clang_getCursorExtent(ref.decl);
-
 		if (!clang_Cursor_isNull(ref.paramDecl))
 		{
 			TextEdit te = TextEdit::fromCXCursor(ref.paramDecl);
@@ -301,7 +302,6 @@ void transform(std::vector<const char *> &filenames)
 	{
 		CXType type = clang_getCursorType(it.second.decl);
 		CXString typeSpelling = clang_getTypeSpelling(type);
-		CXString cursorSpelling = clang_getCursorSpelling(it.second.decl);
 
 		cout << "    " << clang_getCString(typeSpelling) << " " << it.first << ";" << endl;
 
