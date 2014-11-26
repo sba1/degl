@@ -21,5 +21,5 @@ void set_sh_global(short value)
 
 short get_sh_global(void)
 {
-	return sh_global;
+	return sh_global + get_global();
 }
