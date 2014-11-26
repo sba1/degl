@@ -286,8 +286,11 @@ void transform(std::vector<const char *> &filenames)
 		} else
 		{
 			TextEdit te = TextEdit::fromCXCursor(ref.decl);
-			TextEdit te2 = TextEdit::fromCXCursor(ref.block);
-			te.length = te2.start - te.start;
+			if (!clang_Cursor_isNull(ref.block))
+			{
+				TextEdit te2 = TextEdit::fromCXCursor(ref.block);
+				te.length = te2.start - te.start;
+			}
 			stringstream new_text;
 
 			CXType type = clang_getCursorResultType(ref.decl);
