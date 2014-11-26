@@ -97,6 +97,11 @@ struct GlobalVariable
 static std::map<std::string, GlobalVariable> global_var_map;
 
 /**
+ * All function calls.
+ */
+static std::vector<CXCursor> function_calls;
+
+/**
  * Represents a reference to a global variable
  */
 struct GlobalRef
@@ -171,6 +176,10 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 				global_functions.push_back(function);
 				currentFunction = &global_functions[global_functions.size() - 1];
 			}
+			break;
+
+	case	CXCursor_CallExpr:
+			function_calls.push_back(cursor);
 			break;
 
 	case	CXCursor_ParmDecl:
@@ -313,6 +322,17 @@ void transform(std::vector<const char *> &filenames)
 
 		TextEdit te = TextEdit::fromCXCursor(ref.referenceCursor);
 		te.new_string = new_text.str();
+		text_edits.push_back(te);
+	}
+
+	/* Insert to each call of the function the context parameter */
+	for (auto callCursor : function_calls)
+	{
+		TextEdit te = TextEdit::fromCXCursor(callCursor);
+		te.new_string = get_file(te.filename).source.substr(te.start, te.length);
+		int pos = te.new_string.find('(');
+		int numArgs = clang_Cursor_getNumArguments(callCursor);
+		te.new_string.insert(pos + 1, string("__context__").append(numArgs==0?"":","));
 		text_edits.push_back(te);
 	}
 
