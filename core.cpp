@@ -136,6 +136,11 @@ struct TextEdit
 		te.length = end - start;
 		return te;
 	}
+
+private:
+	TextEdit()
+	{
+	}
 };
 
 /**
