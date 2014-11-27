@@ -253,9 +253,20 @@ static File &get_file(const char *filename)
 	return file->second;
 }
 
-__attribute__((unused))
-static void process_single_source_file(const char *filename)
+/**
+ * Process a single source file.
+ *
+ * @param filename
+ */
+static CXIndex process_single_source_file(const char *filename, CXIndex idx, std::vector<TextEdit> &text_edits)
 {
+	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, 0, NULL, 0, NULL);
+	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
+
+	/* Determine global variables and their references */
+	clang_visitChildren(cursor, vistor, NULL);
+
+	return idx;
 }
 
 void transform(std::vector<const char *> &filenames)
@@ -269,11 +280,8 @@ void transform(std::vector<const char *> &filenames)
 	std::vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
-	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, 0, NULL, 0, NULL);
-	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
 
-	/* Determine global variables and their references */
-	clang_visitChildren(cursor, vistor, NULL);
+	process_single_source_file(filename, idx, text_edits);
 
 	cerr << "Number of global functions: " << global_functions.size() << endl;
 	cerr << "Number of global variables: " << global_var_map.size() << endl;
