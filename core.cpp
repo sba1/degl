@@ -141,12 +141,12 @@ struct TextEdit
 /**
  * Represents a physical file and its contents.
  */
-struct FilenameWithContents
+struct File
 {
 	const char *filename;
 	string source;
 
-	FilenameWithContents(const char *filename_) : filename(filename_)
+	File(const char *filename_) : filename(filename_)
 	{
 		/* Load complete file as string */
 		std::ifstream ifs(filename);
@@ -223,7 +223,7 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 /**
  * A map containing all files that are considered.
  */
-static unordered_map<string, FilenameWithContents> fileMap;
+static unordered_map<string, File> fileMap;
 
 /**
  * Insert a file into our file map.
@@ -232,7 +232,7 @@ static unordered_map<string, FilenameWithContents> fileMap;
  */
 static void insert_file(const char *filename)
 {
-	fileMap.insert(make_pair(filename, FilenameWithContents(filename)));
+	fileMap.insert(make_pair(filename, File(filename)));
 }
 
 /**
@@ -242,7 +242,7 @@ static void insert_file(const char *filename)
  * @param filename
  * @return a ref to the requested file.
  */
-static FilenameWithContents &get_file(const char *filename)
+static File &get_file(const char *filename)
 {
 	auto file = fileMap.find(filename);
 	if (file == fileMap.end())
