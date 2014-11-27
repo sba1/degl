@@ -390,8 +390,9 @@ void transform(std::vector<const char *> &filenames)
 	/* Sort text edits in decreasing order */
 	sort(text_edits.begin(), text_edits.end(),  [](TextEdit a, TextEdit b)
 			{
-				bool comp = strcmp(a.filename, b.filename);
-				if (comp) return comp;
+				int comp = strcmp(a.filename, b.filename);
+				if (comp > 0) return true;
+				if (comp < 0) return false;
 
 				return a.start > b.start;
 			});
