@@ -2,7 +2,7 @@
 
 #include "func1.h"
 
-void get_global_2(void)
+int get_global_2(void)
 {
 	return get_global();
 }
