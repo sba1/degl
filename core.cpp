@@ -278,15 +278,16 @@ void transform(std::vector<const char *> &filenames)
 {
 	assert(filenames.size() > 0);
 
-	const char *filename = filenames[0];
-	insert_file(filename);
-
 	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
 
-	process_single_source_file(filename, idx, text_edits);
+	for (auto filename : filenames)
+	{
+		insert_file(filename);
+		process_single_source_file(filename, idx, text_edits);
+	}
 
 	cerr << "Number of global functions: " << global_functions.size() << endl;
 	cerr << "Number of global variables: " << global_var_map.size() << endl;
