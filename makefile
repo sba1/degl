@@ -1,8 +1,8 @@
 CC=gcc
 CXX=g++
-CPPFLAGS=-I/usr/lib/llvm-3.5/include -Wall
+CPPFLAGS=-g -I/usr/lib/llvm-3.5/include -Wall
 CXXFLAGS=-std=c++11
-LDLIBS=-L/usr/lib/llvm-3.5/lib -lclang
+LDLIBS=-g -L/usr/lib/llvm-3.5/lib -lclang
 
 all: tests
 
