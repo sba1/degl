@@ -404,6 +404,15 @@ void transform(std::vector<const char *> &filenames)
 				return a.start > b.start;
 			});
 
+	/* Filter duplicates */
+	auto end = unique(text_edits.begin(), text_edits.end(), [](const TextEdit &a, const TextEdit &b)
+		{
+			if (strcmp(a.filename, b.filename))
+				return false;
+			return (a.start == b.start) && (a.length == b.length);
+		});
+	text_edits.erase(end, text_edits.end());
+
 	/* Insert text edit eol marker */
 	const char *prev_filename = "";
 	std::string new_source;
