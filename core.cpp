@@ -143,6 +143,12 @@ private:
 	}
 };
 
+ostream &operator<<(ostream &os, const TextEdit &te)
+{
+	os << "(" << te.filename << ", " << te.start << ", " << te.length << ")";
+	return os;
+}
+
 /**
  * Represents a physical file and its contents.
  */
