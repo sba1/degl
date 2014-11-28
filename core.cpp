@@ -219,7 +219,9 @@ static enum CXChildVisitResult vistor(CXCursor cursor, CXCursor parent, CXClient
 			/* Remember all global variables */
 			if (parent_cursor_kind == CXCursor_TranslationUnit)
 			{
-				GlobalVariable &glVariable = global_var_map[clang_getCString(clang_getCursorDisplayName(cursor))];
+				CXString display_name = clang_getCursorDisplayName(cursor);
+				GlobalVariable &glVariable = global_var_map[clang_getCString(display_name)]; /* string will be copied */
+				clang_disposeString(display_name);
 				glVariable.decl = cursor;
 				currentVariable = &glVariable;
 			}
