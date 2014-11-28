@@ -269,7 +269,7 @@ static File &get_file(const char *filename)
  *
  * @param filename
  */
-static CXIndex process_single_source_file(const char *filename, CXIndex idx, std::vector<TextEdit> &text_edits)
+static CXTranslationUnit process_single_source_file(const char *filename, CXIndex idx, std::vector<TextEdit> &text_edits)
 {
 	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, 0, NULL, 0, NULL);
 	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
@@ -277,7 +277,7 @@ static CXIndex process_single_source_file(const char *filename, CXIndex idx, std
 	/* Determine global variables and their references */
 	clang_visitChildren(cursor, vistor, NULL);
 
-	return idx;
+	return trunit;
 }
 
 void transform(std::vector<const char *> &filenames)
