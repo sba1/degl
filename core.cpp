@@ -284,6 +284,9 @@ void transform(std::vector<const char *> &filenames)
 {
 	assert(filenames.size() > 0);
 
+	/* List of translation units */
+	std::vector<CXTranslationUnit> tr_units;
+
 	/* Our lists of text edits */
 	std::vector<TextEdit> text_edits;
 
@@ -292,7 +295,7 @@ void transform(std::vector<const char *> &filenames)
 	for (auto filename : filenames)
 	{
 		insert_file(filename);
-		process_single_source_file(filename, idx, text_edits);
+		tr_units.push_back(process_single_source_file(filename, idx, text_edits));
 	}
 
 	cerr << "Number of global functions: " << global_functions.size() << endl;
@@ -446,6 +449,10 @@ void transform(std::vector<const char *> &filenames)
 	/* Output the context source file */
 	cout << "/* __context__.c */" << endl;
 	cout << context_source.str() << endl;
+
+
+	for (auto &tr_unit : tr_units)
+		clang_disposeTranslationUnit(tr_unit);
 
 	clang_disposeIndex(idx);
 
