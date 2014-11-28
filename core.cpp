@@ -79,7 +79,7 @@ struct GlobalFunction
 /**
  * The list of global functions that we encounter
  */
-static std::vector<GlobalFunction> global_functions;
+static vector<GlobalFunction> global_functions;
 
 struct GlobalVariable
 {
@@ -94,12 +94,12 @@ struct GlobalVariable
 /**
  * Maps names of global variables to their defining cursor.
  */
-static std::map<std::string, GlobalVariable> global_var_map;
+static map<string, GlobalVariable> global_var_map;
 
 /**
  * All function calls.
  */
-static std::vector<CXCursor> function_calls;
+static vector<CXCursor> function_calls;
 
 /**
  * Represents a reference to a global variable
@@ -109,7 +109,7 @@ struct GlobalRef
 	CXCursor referenceCursor;
 	CXCursor globalCursor;
 };
-static std::vector<GlobalRef> refs_to_global_vars;
+static vector<GlobalRef> refs_to_global_vars;
 
 /**
  * Represents a simple text edit of some source.
@@ -119,7 +119,7 @@ struct TextEdit
 	const char *filename; /**< Name of the file that is affected by the edit */
 	int start;		/**< Starting offset of the edit */
 	int length;		/**< Length of the text to be replaced */
-	std::string new_string; /**< The text that replaces the region of the source text */
+	string new_string; /**< The text that replaces the region of the source text */
 
 	/**
 	 * Create a text edit with the entire range.
@@ -160,8 +160,8 @@ struct File
 	File(const char *filename_) : filename(filename_)
 	{
 		/* Load complete file as string */
-		std::ifstream ifs(filename);
-		source.assign(std::istreambuf_iterator<char>(ifs), std::istreambuf_iterator<char>());
+		ifstream ifs(filename);
+		source.assign(istreambuf_iterator<char>(ifs), istreambuf_iterator<char>());
 	}
 };
 
@@ -271,7 +271,7 @@ static File &get_file(const char *filename)
  *
  * @param filename
  */
-static CXTranslationUnit process_single_source_file(const char *filename, const vector<const char *> &args, CXIndex idx, std::vector<TextEdit> &text_edits)
+static CXTranslationUnit process_single_source_file(const char *filename, const vector<const char *> &args, CXIndex idx, vector<TextEdit> &text_edits)
 {
 	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, args.size(), &args[0], 0, NULL);
 	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
@@ -282,15 +282,15 @@ static CXTranslationUnit process_single_source_file(const char *filename, const 
 	return trunit;
 }
 
-void transform(std::vector<const char *> &filenames)
+void transform(vector<const char *> &filenames)
 {
 	assert(filenames.size() > 0);
 
 	/* List of translation units */
-	std::vector<CXTranslationUnit> tr_units;
+	vector<CXTranslationUnit> tr_units;
 
 	/* Our lists of text edits */
-	std::vector<TextEdit> text_edits;
+	vector<TextEdit> text_edits;
 
 	CXIndex idx = clang_createIndex(1, 1);
 
@@ -420,7 +420,7 @@ void transform(std::vector<const char *> &filenames)
 
 	/* Insert text edit eol marker */
 	const char *prev_filename = "";
-	std::string new_source;
+	string new_source;
 
 	/* Now perform edit operations */
 	for (auto te : text_edits)
@@ -462,7 +462,7 @@ void transform(std::vector<const char *> &filenames)
 
 void transform(const char *filename)
 {
-	std::vector<const char *> filenames;
+	vector<const char *> filenames;
 	filenames.push_back(filename);
 
 	transform(filenames);
