@@ -5,6 +5,8 @@ int main(int argc, char **argv)
 	std::vector<const char *> files;
 	files.push_back("simplelib/func1.c");
 	files.push_back("simplelib/func2.c");
-	transform(files);
+
+	std::vector<const char *> options;
+	transform(files, options);
 	return 0;
 }

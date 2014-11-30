@@ -282,7 +282,7 @@ static CXTranslationUnit process_single_source_file(const char *filename, const 
 	return trunit;
 }
 
-void transform(vector<const char *> &filenames)
+void transform(vector<const char *> &filenames, vector <const char *> &options)
 {
 	assert(filenames.size() > 0);
 
