@@ -6,6 +6,9 @@ LDLIBS=-g -L/usr/lib/llvm-3.5/lib -lclang
 
 all: tests
 
+degl: degl.cpp core.cpp core.hpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS)  $< $(LDLIBS) -o $@
+
 tests: core_test
 	./core_test
 
