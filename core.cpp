@@ -24,7 +24,7 @@ using namespace std;
 
 /****************************************************************/
 
-void classify_args(vector<const char *> &filenames, vector<const char *> &options, int argc, const char **argv)
+void classify_args(vector<const char *> &filenames, vector<const char *> &options, int argc, const char * const *argv)
 {
 	bool compiler_options = false;
 	for (int i=0; i < argc; i++)

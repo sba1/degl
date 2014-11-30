@@ -14,7 +14,7 @@
  * @param argc number of proper arguments (without the program name)
  * @param argv the actual proper arguments (without the program name)
  */
-void classify_args(std::vector<const char *> &filenames, std::vector<const char *> &options, int argc, const char **argv);
+void classify_args(std::vector<const char *> &filenames, std::vector<const char *> &options, int argc, const char * const *argv);
 
 void transform(std::vector<const char *> &filenames, std::vector<const char*> &options);
 
