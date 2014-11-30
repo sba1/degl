@@ -271,7 +271,7 @@ static File &get_file(const char *filename)
  *
  * @param filename
  */
-static CXTranslationUnit process_single_source_file(const char *filename, const vector<const char *> &args, CXIndex idx, vector<TextEdit> &text_edits)
+static CXTranslationUnit process_single_source_file(const char *filename, const vector<const char *> &args, CXIndex idx)
 {
 	CXTranslationUnit trunit = clang_createTranslationUnitFromSourceFile(idx, filename, args.size(), &args[0], 0, NULL);
 	CXCursor cursor = clang_getTranslationUnitCursor(trunit);
@@ -297,7 +297,7 @@ void transform(vector<const char *> &filenames)
 	for (auto filename : filenames)
 	{
 		insert_file(filename);
-		tr_units.push_back(process_single_source_file(filename, vector<const char*>(), idx, text_edits));
+		tr_units.push_back(process_single_source_file(filename, vector<const char*>(), idx));
 	}
 
 	cerr << "Number of global functions: " << global_functions.size() << endl;
