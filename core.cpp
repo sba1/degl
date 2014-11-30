@@ -22,6 +22,23 @@
 
 using namespace std;
 
+/****************************************************************/
+
+void classify_args(vector<const char *> &filenames, vector<const char *> &options, int argc, const char **argv)
+{
+	bool compiler_options = false;
+	for (int i=0; i < argc; i++)
+	{
+		if (!strcmp("--", argv[i])) compiler_options = true;
+		else if (!compiler_options)
+		{
+			filenames.push_back(argv[i]);
+		} else
+		{
+			options.push_back(argv[i]);
+		}
+	}
+}
 
 /****************************************************************/
 
