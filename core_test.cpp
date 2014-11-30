@@ -14,9 +14,8 @@ static void test__classify_args()
 	assert(options.size() == 1);
 }
 
-int main(int argc, char **argv)
+static void test__transform()
 {
-	test__classify_args();
 
 	std::vector<const char *> files;
 	files.push_back("simplelib/func1.c");
@@ -24,5 +23,11 @@ int main(int argc, char **argv)
 
 	std::vector<const char *> options;
 	transform(files, options);
+}
+
+int main(int argc, char **argv)
+{
+	test__classify_args();
+	test__transform();
 	return 0;
 }
