@@ -459,11 +459,3 @@ void transform(vector<const char *> &filenames)
 	clang_disposeIndex(idx);
 
 }
-
-void transform(const char *filename)
-{
-	vector<const char *> filenames;
-	filenames.push_back(filename);
-
-	transform(filenames);
-}

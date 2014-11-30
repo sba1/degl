@@ -6,7 +6,6 @@
 
 #include <vector>
 
-void transform(const char *filename);
 void transform(std::vector<const char *> &filenames);
 
 #endif /* CORE_HPP_ */
